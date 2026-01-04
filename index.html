@@ -1,185 +1,1945 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scientific Calculator</title>
-  <style>
-    body {
-      background-color: #f8f8f8;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .calculator {
-      width: 360px;
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .display {
-      width: 100%;
-      font-size: 2rem;
-      text-align: right;
-      padding: 20px 10px;
-      border: none;
-      background: none;
-      color: #333;
-      margin-bottom: 10px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-    }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
 
-    button {
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 50%;
-      padding: 18px;
-      background-color: #ffffff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      color: #333;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        .upload-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    button:hover {
-      background-color: #f0f0f0;
-    }
+        .preview-section {
+            flex: 2;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    .btn-operator {
-      background-color: #a9a9a9;
-      color: white;
-    }
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            background-color: #f8fafc;
+        }
 
-    .btn-func {
-      background-color: #d3d3d3;
-    }
+        .upload-area:hover {
+            background-color: #e8f4fc;
+            border-color: #2980b9;
+        }
 
-    .btn-equal {
-      background-color: #4CAF50;
-      color: white;
-    }
+        .upload-icon {
+            font-size: 50px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
 
-    .btn-clear {
-      background-color: #f44336;
-      color: white;
-    }
-  </style>
+        .upload-text {
+            color: #3498db;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-remove {
+            color: #e74c3c;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .controls-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-options, .sharpen-options, .crop-options, .saturation-options, .brightness-options, .rotate-options, .orientation-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .filter-btn, .sharpen-btn, .crop-btn, .saturation-btn, .brightness-btn, .rotate-btn, .orientation-btn {
+            padding: 8px 12px;
+            background: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 55px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .sharpen-btn:hover, .crop-btn:hover, .saturation-btn:hover, .brightness-btn:hover, .rotate-btn:hover, .orientation-btn:hover {
+            background: #d5dbdb;
+        }
+
+        .filter-btn.active, .sharpen-btn.active, .crop-btn.active, .saturation-btn.active, .brightness-btn.active, .rotate-btn.active, .orientation-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .global-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .global-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .global-label {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .preview-container {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            min-height: 300px;
+            background: #f8f9fa;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s;
+            cursor: crosshair;
+        }
+
+        .crop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .crop-selection {
+            position: absolute;
+            border: 2px solid #3498db;
+            background-color: rgba(52, 152, 219, 0.1);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .crop-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 50%;
+            pointer-events: all;
+            cursor: move;
+        }
+
+        .crop-handle.tl { top: -6px; left: -6px; cursor: nwse-resize; }
+        .crop-handle.tr { top: -6px; right: -6px; cursor: nesw-resize; }
+        .crop-handle.bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+        .crop-handle.br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+        .crop-handle.tm { top: -6px; left: 50%; margin-left: -6px; cursor: ns-resize; }
+        .crop-handle.bm { bottom: -6px; left: 50%; margin-left: -6px; cursor: ns-resize; }
+        .crop-handle.ml { top: 50%; left: -6px; margin-top: -6px; cursor: ew-resize; }
+        .crop-handle.mr { top: 50%; right: -6px; margin-top: -6px; cursor: ew-resize; }
+
+        .preview-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .preview-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-nav button {
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .preview-nav button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .rotate-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .rotate-btn-preview {
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .rotate-btn-preview:hover {
+            background: #e67e22;
+        }
+
+        .rotation-indicator {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .crop-instructions {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .crop-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .crop-apply {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .crop-cancel {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .crop-reset {
+            background: #f39c12;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #27ae60;
+        }
+
+        .btn-tertiary {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .btn-tertiary:hover {
+            background: #8e44ad;
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .page-info {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+
+        .option-value {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .preview-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .crop-actions {
+                flex-wrap: wrap;
+            }
+            
+            .filter-options, .sharpen-options, .crop-options, .saturation-options, .brightness-options, .rotate-options, .orientation-options {
+                justify-content: center;
+            }
+            
+            .rotate-controls {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="calculator">
-    <input type="text" id="display" class="display" readonly />
-    <div class="buttons">
-      <button onclick="clearDisplay()" class="btn-clear">C</button>
-      <button onclick="append('(')">(</button>
-      <button onclick="append(')')">)</button>
-      <button onclick="append('^')">xʸ</button>
-      <button onclick="backspace()">⌫</button>
-
-      <button onclick="append('sin(')" class="btn-func">sin</button>
-      <button onclick="append('cos(')" class="btn-func">cos</button>
-      <button onclick="append('tan(')" class="btn-func">tan</button>
-      <button onclick="append('log(')" class="btn-func">log</button>
-      <button onclick="append('ln(')" class="btn-func">ln</button>
-
-      <button onclick="append('π')">π</button>
-      <button onclick="append('e')">e</button>
-      <button onclick="append('√(')">√</button>
-      <button onclick="append('%')">%</button>
-      <button onclick="append('/')">÷</button>
-
-      <button onclick="append('7')">7</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('9')">9</button>
-      <button onclick="append('*')">×</button>
-      <button onclick="append('!')">x!</button>
-
-      <button onclick="append('4')">4</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('6')">6</button>
-      <button onclick="append('-')">−</button>
-      <button onclick="toggleSign()">±</button>
-
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button onclick="append('+')">+</button>
-      <button onclick="append('.')">.</button>
-
-      <button onclick="append('0')">0</button>
-      <button onclick="calculate()" class="btn-equal" style="grid-column: span 4">=</button>
+    <div class="container">
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-text">Drag & Drop or Click to Upload Images</p>
+                    <p class="upload-subtext">Supports JPG, PNG, WebP, and GIF formats</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                </div>
+                
+                <div class="file-list" id="fileList">
+                    <!-- Files will appear here -->
+                </div>
+                
+                <div class="controls-section">
+                    <div class="control-group">
+                        <h3><i class="fas fa-crop-alt"></i> Manual Crop Tool</h3>
+                        <div class="crop-options">
+                            <button class="crop-btn active" data-crop="none">No Crop</button>
+                            <button class="crop-btn" data-crop="manual">Enable Crop</button>
+                        </div>
+                        <p class="help-text">Click and drag on the image to select crop area. Use handles to adjust.</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-compress"></i> PDF Page Orientation</h3>
+                        <div class="orientation-options">
+                            <button class="orientation-btn active" data-orientation="auto">Auto</button>
+                            <button class="orientation-btn" data-orientation="portrait">Portrait</button>
+                            <button class="orientation-btn" data-orientation="landscape">Landscape</button>
+                        </div>
+                        <p class="help-text">Auto: Based on image aspect ratio. Portrait: Vertical. Landscape: Horizontal.</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-sun"></i> Brightness</h3>
+                        <div class="brightness-options">
+                            <button class="brightness-btn active" data-brightness="0">0%</button>
+                            <button class="brightness-btn" data-brightness="25">25%</button>
+                            <button class="brightness-btn" data-brightness="50">50%</button>
+                            <button class="brightness-btn" data-brightness="75">75%</button>
+                            <button class="brightness-btn" data-brightness="100">100%</button>
+                        </div>
+                        <p class="help-text">0% = Original brightness, 100% = Maximum brightness</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-magic"></i> Sharpen Image</h3>
+                        <div class="sharpen-options">
+                            <button class="sharpen-btn active" data-sharpen="0">0%</button>
+                            <button class="sharpen-btn" data-sharpen="25">25%</button>
+                            <button class="sharpen-btn" data-sharpen="50">50%</button>
+                            <button class="sharpen-btn" data-sharpen="75">75%</button>
+                            <button class="sharpen-btn" data-sharpen="100">100%</button>
+                        </div>
+                        <p class="help-text">0% = No sharpening, 100% = Maximum sharpening</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-adjust"></i> Saturation</h3>
+                        <div class="saturation-options">
+                            <button class="saturation-btn" data-saturation="0">0%</button>
+                            <button class="saturation-btn" data-saturation="25">25%</button>
+                            <button class="saturation-btn" data-saturation="50">50%</button>
+                            <button class="saturation-btn" data-saturation="75">75%</button>
+                            <button class="saturation-btn active" data-saturation="100">100%</button>
+                            <button class="saturation-btn" data-saturation="150">150%</button>
+                            <button class="saturation-btn" data-saturation="200">200%</button>
+                        </div>
+                        <p class="help-text">100% = Original, below = less saturation, above = more saturation</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-redo"></i> Rotation</h3>
+                        <div class="rotate-options">
+                            <button class="rotate-btn active" data-rotate="0">0°</button>
+                            <button class="rotate-btn" data-rotate="90">90°</button>
+                            <button class="rotate-btn" data-rotate="180">180°</button>
+                            <button class="rotate-btn" data-rotate="270">270°</button>
+                        </div>
+                        <p class="help-text">Rotate each image individually. Use preview buttons for quick rotation.</p>
+                    </div>
+                    
+                    <div class="global-option">
+                        <input type="checkbox" id="invertColors" class="global-checkbox">
+                        <label for="invertColors" class="global-label">
+                            <i class="fas fa-inverse"></i> Apply Invert Colors to All Pages
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="preview-container" id="previewContainer">
+                    <img id="imagePreview" src="https://via.placeholder.com/600x400?text=Select+or+Upload+Image" alt="Image Preview">
+                    <div class="crop-overlay" id="cropOverlay"></div>
+                </div>
+                
+                <div class="crop-instructions" id="cropInstructions">
+                    <i class="fas fa-mouse-pointer"></i> 
+                    <span id="instructionText">Select "Enable Crop" then click and drag on image</span>
+                </div>
+                
+                <div class="crop-actions" id="cropActions" style="display: none;">
+                    <button class="crop-apply" id="applyCropBtn">
+                        <i class="fas fa-check"></i> Apply Crop
+                    </button>
+                    <button class="crop-cancel" id="cancelCropBtn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="crop-reset" id="resetCropBtn">
+                        <i class="fas fa-redo"></i> Reset Crop
+                    </button>
+                </div>
+                
+                <div class="preview-controls">
+                    <div class="preview-nav">
+                        <button id="prevBtn" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                        <span id="imageCounter">No images</span>
+                        <button id="nextBtn" disabled>Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="rotate-controls">
+                        <button class="rotate-btn-preview" id="rotateLeftBtn" title="Rotate Left (Counter-Clockwise)">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <span class="rotation-indicator" id="rotationIndicator">0°</span>
+                        <button class="rotate-btn-preview" id="rotateRightBtn" title="Rotate Right (Clockwise)">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                    
+                    <button id="resetFilters" class="btn"><i class="fas fa-redo"></i> Reset All</button>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="processAllBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-cogs"></i> Apply to All Images
+                    </button>
+                    <button id="printBtn" class="btn btn-tertiary" disabled>
+                        <i class="fas fa-print"></i> Print PDF
+                    </button>
+                    <button id="convertBtn" class="btn btn-primary" disabled>
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <script>
-    const display = document.getElementById("display");
-
-    function append(value) {
-      if (value === 'π') value = Math.PI.toString();
-      if (value === 'e') value = Math.E.toString();
-      display.value += value;
-    }
-
-    function clearDisplay() {
-      display.value = '';
-    }
-
-    function backspace() {
-      display.value = display.value.slice(0, -1);
-    }
-
-    function toggleSign() {
-      if (display.value) {
-        if (display.value.startsWith('-')) {
-          display.value = display.value.slice(1);
-        } else {
-          display.value = '-' + display.value;
+    
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-content">
+            <div class="spinner"></div>
+            <h3 id="processingTitle">Processing Images...</h3>
+            <p id="processingText">Preparing your PDF document</p>
+            <p id="progressText">Please wait while we process your images</p>
+        </div>
+    </div>
+    
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        // Ensure jsPDF is properly loaded
+        window.jsPDF = window.jspdf.jsPDF;
+        
+        // Global variables
+        let images = [];
+        let currentImageIndex = 0;
+        let filters = {
+            cropEnabled: false,
+            brightness: 0,
+            sharpen: 0,
+            saturation: 100,
+            rotation: 0,
+            invertColors: false,
+            pdfOrientation: 'auto'
+        };
+        
+        // Crop variables
+        let isCropping = false;
+        let cropSelection = null;
+        let cropStartX = 0;
+        let cropStartY = 0;
+        let cropCurrentX = 0;
+        let cropCurrentY = 0;
+        let cropResizing = false;
+        let activeHandle = null;
+        let currentCropArea = null;
+        
+        // DOM elements
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileList = document.getElementById('fileList');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const cropOverlay = document.getElementById('cropOverlay');
+        const cropInstructions = document.getElementById('cropInstructions');
+        const instructionText = document.getElementById('instructionText');
+        const cropActions = document.getElementById('cropActions');
+        const applyCropBtn = document.getElementById('applyCropBtn');
+        const cancelCropBtn = document.getElementById('cancelCropBtn');
+        const resetCropBtn = document.getElementById('resetCropBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const imageCounter = document.getElementById('imageCounter');
+        const convertBtn = document.getElementById('convertBtn');
+        const printBtn = document.getElementById('printBtn');
+        const processAllBtn = document.getElementById('processAllBtn');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const processingOverlay = document.getElementById('processingOverlay');
+        const processingTitle = document.getElementById('processingTitle');
+        const processingText = document.getElementById('processingText');
+        const progressText = document.getElementById('progressText');
+        const invertColorsCheckbox = document.getElementById('invertColors');
+        const rotateLeftBtn = document.getElementById('rotateLeftBtn');
+        const rotateRightBtn = document.getElementById('rotateRightBtn');
+        const rotationIndicator = document.getElementById('rotationIndicator');
+        
+        // Control elements
+        const cropButtons = document.querySelectorAll('.crop-btn');
+        const orientationButtons = document.querySelectorAll('.orientation-btn');
+        const brightnessButtons = document.querySelectorAll('.brightness-btn');
+        const sharpenButtons = document.querySelectorAll('.sharpen-btn');
+        const saturationButtons = document.querySelectorAll('.saturation-btn');
+        const rotationButtons = document.querySelectorAll('.rotate-btn');
+        
+        // Event Listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#e8f4fc';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = '#f8fafc';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#f8fafc';
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFiles(e.target.files);
+            }
+        });
+        
+        prevBtn.addEventListener('click', showPreviousImage);
+        nextBtn.addEventListener('click', showNextImage);
+        convertBtn.addEventListener('click', () => convertToPDF('download'));
+        printBtn.addEventListener('click', () => convertToPDF('print'));
+        processAllBtn.addEventListener('click', applyFiltersToAll);
+        resetFiltersBtn.addEventListener('click', resetAll);
+        
+        applyCropBtn.addEventListener('click', applyCrop);
+        cancelCropBtn.addEventListener('click', cancelCrop);
+        resetCropBtn.addEventListener('click', resetCrop);
+        
+        rotateLeftBtn.addEventListener('click', () => rotateImage(-90));
+        rotateRightBtn.addEventListener('click', () => rotateImage(90));
+        
+        invertColorsCheckbox.addEventListener('change', () => {
+            filters.invertColors = invertColorsCheckbox.checked;
+            applyFilters();
+        });
+        
+        // Control button event listeners
+        cropButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                cropButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const cropMode = button.dataset.crop;
+                if (cropMode === 'manual') {
+                    enableCropMode();
+                } else {
+                    disableCropMode();
+                }
+            });
+        });
+        
+        orientationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                orientationButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filters.pdfOrientation = button.dataset.orientation;
+                // Show a quick message about the change
+                const status = button.dataset.orientation === 'auto' ? 
+                    'Auto (will determine based on image aspect ratio)' :
+                    button.dataset.orientation === 'portrait' ? 
+                    'Portrait (vertical pages)' : 
+                    'Landscape (horizontal pages)';
+                console.log(`PDF orientation set to: ${status}`);
+            });
+        });
+        
+        brightnessButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                brightnessButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filters.brightness = parseInt(button.dataset.brightness);
+                applyFilters();
+            });
+        });
+        
+        sharpenButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                sharpenButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filters.sharpen = parseInt(button.dataset.sharpen);
+                applyFilters();
+            });
+        });
+        
+        saturationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                saturationButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filters.saturation = parseInt(button.dataset.saturation);
+                applyFilters();
+            });
+        });
+        
+        rotationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                rotationButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filters.rotation = parseInt(button.dataset.rotate);
+                updateRotationIndicator();
+                applyFilters();
+            });
+        });
+        
+        // Mouse events for cropping
+        previewContainer.addEventListener('mousedown', startCrop);
+        previewContainer.addEventListener('touchstart', startCropTouch, { passive: false });
+        
+        // Functions
+        function handleFiles(files) {
+            const validFiles = Array.from(files).filter(file => 
+                file.type.startsWith('image/')
+            );
+            
+            if (validFiles.length === 0) {
+                alert('Please select valid image files (JPG, PNG, WebP, GIF)');
+                return;
+            }
+            
+            validFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        images.push({
+                            file: file,
+                            originalData: e.target.result,
+                            filteredData: e.target.result,
+                            originalWidth: img.width,
+                            originalHeight: img.height,
+                            filtersApplied: false,
+                            cropArea: null,
+                            cropEnabled: false,
+                            rotation: 0
+                        });
+                        
+                        updateFileList();
+                        if (images.length === 1) {
+                            currentImageIndex = 0;
+                            updatePreview();
+                            convertBtn.disabled = false;
+                            printBtn.disabled = false;
+                            processAllBtn.disabled = false;
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
         }
-      }
-    }
-
-    function factorial(n) {
-      if (n < 0) return NaN;
-      if (n === 0 || n === 1) return 1;
-      let result = 1;
-      for (let i = 2; i <= n; i++) result *= i;
-      return result;
-    }
-
-    function calculate() {
-      let expr = display.value
-        .replace(/√/g, 'Math.sqrt')
-        .replace(/sin/g, 'Math.sin')
-        .replace(/cos/g, 'Math.cos')
-        .replace(/tan/g, 'Math.tan')
-        .replace(/log/g, 'Math.log10')
-        .replace(/ln/g, 'Math.log')
-        .replace(/\^/g, '**');
-
-      try {
-        // Handle factorials separately
-        while (expr.includes('!')) {
-          expr = expr.replace(/(\d+)!/, (match, number) => {
-            return factorial(Number(number));
-          });
+        
+        function updateFileList() {
+            fileList.innerHTML = '';
+            images.forEach((image, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                const hasCrop = image.cropArea ? ' (Cropped)' : '';
+                const rotationText = image.rotation !== 0 ? ` (${image.rotation}°)` : '';
+                fileItem.innerHTML = `
+                    <span class="file-name">${image.file.name}${hasCrop}${rotationText}</span>
+                    <span>${(image.file.size / 1024).toFixed(1)} KB</span>
+                    <button class="file-remove" data-index="${index}"><i class="fas fa-times"></i></button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+            
+            document.querySelectorAll('.file-remove').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    images.splice(index, 1);
+                    updateFileList();
+                    
+                    if (images.length === 0) {
+                        convertBtn.disabled = true;
+                        printBtn.disabled = true;
+                        processAllBtn.disabled = true;
+                        imagePreview.src = 'https://via.placeholder.com/600x400?text=Select+or+Upload+Image';
+                        imageCounter.textContent = 'No images';
+                        prevBtn.disabled = true;
+                        nextBtn.disabled = true;
+                        disableCropMode();
+                    } else {
+                        if (currentImageIndex >= images.length) {
+                            currentImageIndex = images.length - 1;
+                        }
+                        updatePreview();
+                    }
+                });
+            });
         }
-
-        const result = eval(expr);
-        display.value = result;
-      } catch (e) {
-        display.value = "Error";
-      }
-    }
-  </script>
+        
+        function updatePreview() {
+            if (images.length > 0) {
+                const currentImage = images[currentImageIndex];
+                imagePreview.src = currentImage.filteredData;
+                imageCounter.textContent = `${currentImageIndex + 1} of ${images.length}`;
+                prevBtn.disabled = currentImageIndex === 0;
+                nextBtn.disabled = currentImageIndex === images.length - 1;
+                
+                if (currentImage.cropEnabled) {
+                    enableCropMode();
+                    if (currentImage.cropArea) {
+                        showCropSelection(currentImage.cropArea);
+                    }
+                } else {
+                    disableCropMode();
+                }
+                
+                updateRotationIndicator();
+            }
+        }
+        
+        function updateRotationIndicator() {
+            const currentImage = images[currentImageIndex];
+            if (currentImage) {
+                rotationIndicator.textContent = `${currentImage.rotation}°`;
+                
+                rotationButtons.forEach(btn => {
+                    if (parseInt(btn.dataset.rotate) === currentImage.rotation) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+        
+        function showPreviousImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updatePreview();
+            }
+        }
+        
+        function showNextImage() {
+            if (currentImageIndex < images.length - 1) {
+                currentImageIndex++;
+                updatePreview();
+            }
+        }
+        
+        function enableCropMode() {
+            filters.cropEnabled = true;
+            images[currentImageIndex].cropEnabled = true;
+            cropActions.style.display = 'flex';
+            instructionText.textContent = 'Click and drag on the image to select crop area';
+            imagePreview.style.cursor = 'crosshair';
+            
+            cropButtons.forEach(btn => {
+                if (btn.dataset.crop === 'manual') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        function disableCropMode() {
+            filters.cropEnabled = false;
+            images[currentImageIndex].cropEnabled = false;
+            cropActions.style.display = 'none';
+            instructionText.textContent = 'Select "Enable Crop" then click and drag on image';
+            imagePreview.style.cursor = 'default';
+            removeCropSelection();
+            
+            cropButtons.forEach(btn => {
+                if (btn.dataset.crop === 'none') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        function rotateImage(degrees) {
+            if (images.length === 0) return;
+            
+            const currentImage = images[currentImageIndex];
+            
+            currentImage.rotation = (currentImage.rotation + degrees) % 360;
+            if (currentImage.rotation < 0) currentImage.rotation += 360;
+            
+            updateRotationIndicator();
+            applyFilters();
+        }
+        
+        // Crop functions
+        function startCrop(e) {
+            if (!filters.cropEnabled) return;
+            
+            e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const handle = getHandleAtPosition(x, y);
+            if (handle) {
+                startResize(handle, x, y);
+                return;
+            }
+            
+            if (cropSelection && isPointInSelection(x, y)) {
+                startMove(x, y);
+                return;
+            }
+            
+            startNewSelection(x, y);
+        }
+        
+        function startCropTouch(e) {
+            if (!filters.cropEnabled) return;
+            
+            e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            const handle = getHandleAtPosition(x, y);
+            if (handle) {
+                startResize(handle, x, y);
+                return;
+            }
+            
+            if (cropSelection && isPointInSelection(x, y)) {
+                startMove(x, y);
+                return;
+            }
+            
+            startNewSelection(x, y);
+        }
+        
+        function startNewSelection(x, y) {
+            isCropping = true;
+            cropStartX = x;
+            cropStartY = y;
+            cropCurrentX = x;
+            cropCurrentY = y;
+            
+            removeCropSelection();
+            createCropSelection();
+            updateCropSelection();
+            
+            document.addEventListener('mousemove', updateCropDrag);
+            document.addEventListener('mouseup', endCropDrag);
+            document.addEventListener('touchmove', updateCropDragTouch, { passive: false });
+            document.addEventListener('touchend', endCropDrag);
+        }
+        
+        function startMove(x, y) {
+            isCropping = true;
+            cropStartX = x;
+            cropStartY = y;
+            
+            const rect = cropSelection.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            cropCurrentX = rect.left - containerRect.left + rect.width / 2;
+            cropCurrentY = rect.top - containerRect.top + rect.height / 2;
+            
+            document.addEventListener('mousemove', moveCropSelection);
+            document.addEventListener('mouseup', endCropMove);
+            document.addEventListener('touchmove', moveCropSelectionTouch, { passive: false });
+            document.addEventListener('touchend', endCropMove);
+        }
+        
+        function startResize(handle, x, y) {
+            isCropping = true;
+            cropResizing = true;
+            activeHandle = handle;
+            cropStartX = x;
+            cropStartY = y;
+            
+            const rect = cropSelection.getBoundingClientRect();
+            cropCurrentX = rect.left;
+            cropCurrentY = rect.top;
+            
+            document.addEventListener('mousemove', resizeCropSelection);
+            document.addEventListener('mouseup', endCropResize);
+            document.addEventListener('touchmove', resizeCropSelectionTouch, { passive: false });
+            document.addEventListener('touchend', endCropResize);
+        }
+        
+        function updateCropDrag(e) {
+            if (!isCropping) return;
+            
+            const rect = imagePreview.getBoundingClientRect();
+            cropCurrentX = e.clientX - rect.left;
+            cropCurrentY = e.clientY - rect.top;
+            updateCropSelection();
+        }
+        
+        function updateCropDragTouch(e) {
+            if (!isCropping) return;
+            
+            e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
+            const touch = e.touches[0];
+            cropCurrentX = touch.clientX - rect.left;
+            cropCurrentY = touch.clientY - rect.top;
+            updateCropSelection();
+        }
+        
+        function moveCropSelection(e) {
+            if (!isCropping) return;
+            
+            const rect = imagePreview.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const deltaX = x - cropStartX;
+            const deltaY = y - cropStartY;
+            
+            moveSelection(deltaX, deltaY);
+            cropStartX = x;
+            cropStartY = y;
+        }
+        
+        function moveCropSelectionTouch(e) {
+            if (!isCropping) return;
+            
+            e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            const deltaX = x - cropStartX;
+            const deltaY = y - cropStartY;
+            
+            moveSelection(deltaX, deltaY);
+            cropStartX = x;
+            cropStartY = y;
+        }
+        
+        function resizeCropSelection(e) {
+            if (!isCropping || !cropResizing) return;
+            
+            const rect = imagePreview.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            resizeSelection(x, y);
+        }
+        
+        function resizeCropSelectionTouch(e) {
+            if (!isCropping || !cropResizing) return;
+            
+            e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            resizeSelection(x, y);
+        }
+        
+        function endCropDrag() {
+            isCropping = false;
+            document.removeEventListener('mousemove', updateCropDrag);
+            document.removeEventListener('mouseup', endCropDrag);
+            document.removeEventListener('touchmove', updateCropDragTouch);
+            document.removeEventListener('touchend', endCropDrag);
+        }
+        
+        function endCropMove() {
+            isCropping = false;
+            document.removeEventListener('mousemove', moveCropSelection);
+            document.removeEventListener('mouseup', endCropMove);
+            document.removeEventListener('touchmove', moveCropSelectionTouch);
+            document.removeEventListener('touchend', endCropMove);
+        }
+        
+        function endCropResize() {
+            isCropping = false;
+            cropResizing = false;
+            activeHandle = null;
+            document.removeEventListener('mousemove', resizeCropSelection);
+            document.removeEventListener('mouseup', endCropResize);
+            document.removeEventListener('touchmove', resizeCropSelectionTouch);
+            document.removeEventListener('touchend', endCropResize);
+        }
+        
+        function createCropSelection() {
+            cropSelection = document.createElement('div');
+            cropSelection.className = 'crop-selection';
+            cropOverlay.appendChild(cropSelection);
+            
+            const handles = ['tl', 'tm', 'tr', 'ml', 'mr', 'bl', 'bm', 'br'];
+            handles.forEach(handle => {
+                const handleEl = document.createElement('div');
+                handleEl.className = `crop-handle ${handle}`;
+                handleEl.dataset.handle = handle;
+                cropSelection.appendChild(handleEl);
+            });
+        }
+        
+        function updateCropSelection() {
+            if (!cropSelection) return;
+            
+            const x = Math.min(cropStartX, cropCurrentX);
+            const y = Math.min(cropStartY, cropCurrentY);
+            const width = Math.abs(cropCurrentX - cropStartX);
+            const height = Math.abs(cropCurrentY - cropStartY);
+            
+            const minSize = 20;
+            const finalWidth = Math.max(width, minSize);
+            const finalHeight = Math.max(height, minSize);
+            
+            const imgRect = imagePreview.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const imgLeft = (containerRect.width - imgRect.width) / 2;
+            const imgTop = (containerRect.height - imgRect.height) / 2;
+            
+            const maxX = imgLeft + imgRect.width;
+            const maxY = imgTop + imgRect.height;
+            
+            let finalX = Math.max(imgLeft, x);
+            let finalY = Math.max(imgTop, y);
+            
+            if (finalX + finalWidth > maxX) finalX = maxX - finalWidth;
+            if (finalY + finalHeight > maxY) finalY = maxY - finalHeight;
+            if (finalX < imgLeft) finalX = imgLeft;
+            if (finalY < imgTop) finalY = imgTop;
+            
+            cropSelection.style.left = `${finalX}px`;
+            cropSelection.style.top = `${finalY}px`;
+            cropSelection.style.width = `${finalWidth}px`;
+            cropSelection.style.height = `${finalHeight}px`;
+        }
+        
+        function moveSelection(deltaX, deltaY) {
+            if (!cropSelection) return;
+            
+            const rect = cropSelection.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const imgRect = imagePreview.getBoundingClientRect();
+            
+            const imgLeft = (containerRect.width - imgRect.width) / 2;
+            const imgTop = (containerRect.height - imgRect.height) / 2;
+            const imgRight = imgLeft + imgRect.width;
+            const imgBottom = imgTop + imgRect.height;
+            
+            let newX = rect.left - containerRect.left + deltaX;
+            let newY = rect.top - containerRect.top + deltaY;
+            
+            if (newX < imgLeft) newX = imgLeft;
+            if (newY < imgTop) newY = imgTop;
+            if (newX + rect.width > imgRight) newX = imgRight - rect.width;
+            if (newY + rect.height > imgBottom) newY = imgBottom - rect.height;
+            
+            cropSelection.style.left = `${newX}px`;
+            cropSelection.style.top = `${newY}px`;
+        }
+        
+        function resizeSelection(x, y) {
+            if (!cropSelection || !activeHandle) return;
+            
+            const rect = cropSelection.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const imgRect = imagePreview.getBoundingClientRect();
+            
+            const imgLeft = (containerRect.width - imgRect.width) / 2;
+            const imgTop = (containerRect.height - imgRect.height) / 2;
+            const imgRight = imgLeft + imgRect.width;
+            const imgBottom = imgTop + imgRect.height;
+            
+            const minSize = 20;
+            let newLeft = rect.left - containerRect.left;
+            let newTop = rect.top - containerRect.top;
+            let newWidth = rect.width;
+            let newHeight = rect.height;
+            
+            switch(activeHandle) {
+                case 'tl':
+                    newLeft = Math.min(x, newLeft + newWidth - minSize);
+                    newTop = Math.min(y, newTop + newHeight - minSize);
+                    newWidth = (rect.left - containerRect.left + rect.width) - newLeft;
+                    newHeight = (rect.top - containerRect.top + rect.height) - newTop;
+                    break;
+                case 'tr':
+                    newTop = Math.min(y, newTop + newHeight - minSize);
+                    newWidth = Math.max(minSize, x - newLeft);
+                    newHeight = (rect.top - containerRect.top + rect.height) - newTop;
+                    break;
+                case 'bl':
+                    newLeft = Math.min(x, newLeft + newWidth - minSize);
+                    newWidth = (rect.left - containerRect.left + rect.width) - newLeft;
+                    newHeight = Math.max(minSize, y - newTop);
+                    break;
+                case 'br':
+                    newWidth = Math.max(minSize, x - newLeft);
+                    newHeight = Math.max(minSize, y - newTop);
+                    break;
+                case 'tm':
+                    newTop = Math.min(y, newTop + newHeight - minSize);
+                    newHeight = (rect.top - containerRect.top + rect.height) - newTop;
+                    break;
+                case 'bm':
+                    newHeight = Math.max(minSize, y - newTop);
+                    break;
+                case 'ml':
+                    newLeft = Math.min(x, newLeft + newWidth - minSize);
+                    newWidth = (rect.left - containerRect.left + rect.width) - newLeft;
+                    break;
+                case 'mr':
+                    newWidth = Math.max(minSize, x - newLeft);
+                    break;
+            }
+            
+            if (newLeft < imgLeft) {
+                newWidth -= (imgLeft - newLeft);
+                newLeft = imgLeft;
+            }
+            if (newTop < imgTop) {
+                newHeight -= (imgTop - newTop);
+                newTop = imgTop;
+            }
+            if (newLeft + newWidth > imgRight) {
+                newWidth = imgRight - newLeft;
+            }
+            if (newTop + newHeight > imgBottom) {
+                newHeight = imgBottom - newTop;
+            }
+            
+            newWidth = Math.max(minSize, newWidth);
+            newHeight = Math.max(minSize, newHeight);
+            
+            cropSelection.style.left = `${newLeft}px`;
+            cropSelection.style.top = `${newTop}px`;
+            cropSelection.style.width = `${newWidth}px`;
+            cropSelection.style.height = `${newHeight}px`;
+        }
+        
+        function getHandleAtPosition(x, y) {
+            if (!cropSelection) return null;
+            
+            const handles = cropSelection.querySelectorAll('.crop-handle');
+            for (const handle of handles) {
+                const rect = handle.getBoundingClientRect();
+                const containerRect = previewContainer.getBoundingClientRect();
+                const handleX = rect.left - containerRect.left + rect.width / 2;
+                const handleY = rect.top - containerRect.top + rect.height / 2;
+                
+                const handleSize = 12;
+                if (Math.abs(x - handleX) <= handleSize && Math.abs(y - handleY) <= handleSize) {
+                    return handle.dataset.handle;
+                }
+            }
+            return null;
+        }
+        
+        function isPointInSelection(x, y) {
+            if (!cropSelection) return false;
+            
+            const rect = cropSelection.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const selLeft = rect.left - containerRect.left;
+            const selTop = rect.top - containerRect.top;
+            
+            return x >= selLeft && x <= selLeft + rect.width &&
+                   y >= selTop && y <= selTop + rect.height;
+        }
+        
+        function removeCropSelection() {
+            while (cropOverlay.firstChild) {
+                cropOverlay.removeChild(cropOverlay.firstChild);
+            }
+            cropSelection = null;
+        }
+        
+        function showCropSelection(cropArea) {
+            removeCropSelection();
+            createCropSelection();
+            
+            const imgRect = imagePreview.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const imgLeft = (containerRect.width - imgRect.width) / 2;
+            const imgTop = (containerRect.height - imgRect.height) / 2;
+            
+            cropSelection.style.left = `${imgLeft + cropArea.x * imgRect.width / cropArea.imageWidth}px`;
+            cropSelection.style.top = `${imgTop + cropArea.y * imgRect.height / cropArea.imageHeight}px`;
+            cropSelection.style.width = `${cropArea.width * imgRect.width / cropArea.imageWidth}px`;
+            cropSelection.style.height = `${cropArea.height * imgRect.height / cropArea.imageHeight}px`;
+        }
+        
+        function applyCrop() {
+            if (!cropSelection) {
+                alert('Please select a crop area first');
+                return;
+            }
+            
+            const currentImage = images[currentImageIndex];
+            
+            const imgRect = imagePreview.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const selectionRect = cropSelection.getBoundingClientRect();
+            
+            const imgLeft = (containerRect.width - imgRect.width) / 2;
+            const imgTop = (containerRect.height - imgRect.height) / 2;
+            
+            currentCropArea = {
+                x: (selectionRect.left - containerRect.left - imgLeft) / imgRect.width,
+                y: (selectionRect.top - containerRect.top - imgTop) / imgRect.height,
+                width: selectionRect.width / imgRect.width,
+                height: selectionRect.height / imgRect.height
+            };
+            
+            const img = new Image();
+            img.onload = function() {
+                const actualCropX = Math.max(0, currentCropArea.x * img.width);
+                const actualCropY = Math.max(0, currentCropArea.y * img.height);
+                const actualCropWidth = Math.min(img.width - actualCropX, currentCropArea.width * img.width);
+                const actualCropHeight = Math.min(img.height - actualCropY, currentCropArea.height * img.height);
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = actualCropWidth;
+                canvas.height = actualCropHeight;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.drawImage(
+                    img,
+                    actualCropX, actualCropY, actualCropWidth, actualCropHeight,
+                    0, 0, actualCropWidth, actualCropHeight
+                );
+                
+                currentImage.cropArea = {
+                    x: actualCropX,
+                    y: actualCropY,
+                    width: actualCropWidth,
+                    height: actualCropHeight,
+                    imageWidth: img.width,
+                    imageHeight: img.height
+                };
+                
+                currentImage.filteredData = canvas.toDataURL('image/jpeg', 0.9);
+                currentImage.filtersApplied = true;
+                
+                imagePreview.src = currentImage.filteredData;
+                updateFileList();
+                removeCropSelection();
+                disableCropMode();
+                
+                setTimeout(() => {
+                    alert('Crop applied successfully!');
+                }, 100);
+            };
+            
+            img.src = currentImage.filteredData;
+        }
+        
+        function cancelCrop() {
+            removeCropSelection();
+            disableCropMode();
+        }
+        
+        function resetCrop() {
+            const currentImage = images[currentImageIndex];
+            currentImage.cropArea = null;
+            currentImage.filteredData = currentImage.originalData;
+            currentImage.filtersApplied = false;
+            currentImage.rotation = 0;
+            
+            imagePreview.src = currentImage.filteredData;
+            removeCropSelection();
+            updateRotationIndicator();
+            updateFileList();
+            
+            alert('Crop reset to original image');
+        }
+        
+        function applyFilters() {
+            if (images.length === 0) return;
+            
+            const currentImage = images[currentImageIndex];
+            
+            const sourceImage = new Image();
+            
+            sourceImage.onload = () => {
+                let canvasWidth, canvasHeight;
+                
+                if (currentImage.rotation === 90 || currentImage.rotation === 270) {
+                    canvasWidth = sourceImage.height;
+                    canvasHeight = sourceImage.width;
+                } else {
+                    canvasWidth = sourceImage.width;
+                    canvasHeight = sourceImage.height;
+                }
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                ctx.save();
+                ctx.translate(canvasWidth / 2, canvasHeight / 2);
+                
+                const radians = (currentImage.rotation * Math.PI) / 180;
+                ctx.rotate(radians);
+                
+                ctx.drawImage(
+                    sourceImage,
+                    -sourceImage.width / 2,
+                    -sourceImage.height / 2,
+                    sourceImage.width,
+                    sourceImage.height
+                );
+                
+                ctx.restore();
+                
+                let processedCanvas = canvas;
+                if (currentImage.cropArea && currentImage.rotation === 0) {
+                    const cropCanvas = document.createElement('canvas');
+                    cropCanvas.width = currentImage.cropArea.width;
+                    cropCanvas.height = currentImage.cropArea.height;
+                    const cropCtx = cropCanvas.getContext('2d');
+                    
+                    cropCtx.drawImage(
+                        canvas,
+                        currentImage.cropArea.x, currentImage.cropArea.y,
+                        currentImage.cropArea.width, currentImage.cropArea.height,
+                        0, 0, currentImage.cropArea.width, currentImage.cropArea.height
+                    );
+                    
+                    processedCanvas = cropCanvas;
+                } else if (currentImage.cropArea && currentImage.rotation !== 0) {
+                    alert('Note: Crop area will be recalculated after rotation. Please reapply crop if needed.');
+                    currentImage.cropArea = null;
+                }
+                
+                const finalCtx = processedCanvas.getContext('2d');
+                applyImageFilters(finalCtx, processedCanvas.width, processedCanvas.height);
+                
+                currentImage.filteredData = processedCanvas.toDataURL('image/jpeg', 0.9);
+                currentImage.filtersApplied = true;
+                
+                imagePreview.src = currentImage.filteredData;
+            };
+            
+            sourceImage.src = currentImage.originalData;
+        }
+        
+        function applyImageFilters(ctx, width, height) {
+            applyBrightnessFilter(ctx, width, height);
+            applySharpenFilter(ctx, width, height);
+            applySaturationFilter(ctx, width, height);
+            
+            if (filters.invertColors) {
+                applyInvertColorsFilter(ctx, width, height);
+            }
+        }
+        
+        function applyBrightnessFilter(ctx, width, height) {
+            if (filters.brightness === 0) return;
+            
+            const brightnessFactor = 1.0 + (filters.brightness / 100);
+            
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.min(255, data[i] * brightnessFactor);
+                data[i + 1] = Math.min(255, data[i + 1] * brightnessFactor);
+                data[i + 2] = Math.min(255, data[i + 2] * brightnessFactor);
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        function applySharpenFilter(ctx, width, height) {
+            if (filters.sharpen === 0) return;
+            
+            const sharpenFactor = filters.sharpen / 100;
+            
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const tempData = new Uint8ClampedArray(data);
+            
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    for (let c = 0; c < 3; c++) {
+                        const idx = (y * width + x) * 4 + c;
+                        
+                        const top = tempData[((y-1) * width + x) * 4 + c];
+                        const bottom = tempData[((y+1) * width + x) * 4 + c];
+                        const left = tempData[(y * width + (x-1)) * 4 + c];
+                        const right = tempData[(y * width + (x+1)) * 4 + c];
+                        const center = tempData[idx];
+                        
+                        const sharpened = center + sharpenFactor * (4 * center - top - bottom - left - right);
+                        data[idx] = Math.max(0, Math.min(255, sharpened));
+                    }
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        function applySaturationFilter(ctx, width, height) {
+            if (filters.saturation === 100) return;
+            
+            const saturationFactor = filters.saturation / 100;
+            
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                
+                const gray = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+                
+                data[i] = Math.max(0, Math.min(255, gray + saturationFactor * (r - gray)));
+                data[i + 1] = Math.max(0, Math.min(255, gray + saturationFactor * (g - gray)));
+                data[i + 2] = Math.max(0, Math.min(255, gray + saturationFactor * (b - gray)));
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        function applyInvertColorsFilter(ctx, width, height) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = 255 - data[i];
+                data[i + 1] = 255 - data[i + 1];
+                data[i + 2] = 255 - data[i + 2];
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        function applyFiltersToAll() {
+            if (images.length === 0) return;
+            
+            processingTitle.textContent = 'Applying Filters to All Images';
+            processingText.textContent = 'This may take a moment...';
+            processingOverlay.style.display = 'flex';
+            
+            let processed = 0;
+            
+            images.forEach((image, index) => {
+                const img = new Image();
+                img.onload = () => {
+                    let canvasWidth, canvasHeight;
+                    
+                    if (image.rotation === 90 || image.rotation === 270) {
+                        canvasWidth = img.height;
+                        canvasHeight = img.width;
+                    } else {
+                        canvasWidth = img.width;
+                        canvasHeight = img.height;
+                    }
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = canvasWidth;
+                    canvas.height = canvasHeight;
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                    ctx.save();
+                    ctx.translate(canvasWidth / 2, canvasHeight / 2);
+                    
+                    const radians = (image.rotation * Math.PI) / 180;
+                    ctx.rotate(radians);
+                    
+                    ctx.drawImage(
+                        img,
+                        -img.width / 2,
+                        -img.height / 2,
+                        img.width,
+                        img.height
+                    );
+                    
+                    ctx.restore();
+                    
+                    let processedCanvas = canvas;
+                    if (image.cropArea && image.rotation === 0) {
+                        const cropCanvas = document.createElement('canvas');
+                        cropCanvas.width = image.cropArea.width;
+                        cropCanvas.height = image.cropArea.height;
+                        const cropCtx = cropCanvas.getContext('2d');
+                        
+                        cropCtx.drawImage(
+                            canvas,
+                            image.cropArea.x, image.cropArea.y,
+                            image.cropArea.width, image.cropArea.height,
+                            0, 0, image.cropArea.width, image.cropArea.height
+                        );
+                        
+                        processedCanvas = cropCanvas;
+                    }
+                    
+                    const finalCtx = processedCanvas.getContext('2d');
+                    applyImageFilters(finalCtx, processedCanvas.width, processedCanvas.height);
+                    
+                    image.filteredData = processedCanvas.toDataURL('image/jpeg', 0.9);
+                    image.filtersApplied = true;
+                    
+                    processed++;
+                    progressText.textContent = `Processed ${processed} of ${images.length} images`;
+                    
+                    if (processed === images.length) {
+                        processingOverlay.style.display = 'none';
+                        updatePreview();
+                        alert(`Filters applied to all ${images.length} images!`);
+                    }
+                };
+                img.src = image.originalData;
+            });
+        }
+        
+        function resetAll() {
+            if (images.length === 0) return;
+            
+            const currentImage = images[currentImageIndex];
+            currentImage.filteredData = currentImage.originalData;
+            currentImage.filtersApplied = false;
+            currentImage.cropArea = null;
+            currentImage.cropEnabled = false;
+            currentImage.rotation = 0;
+            
+            cropButtons.forEach(btn => {
+                if (btn.dataset.crop === 'none') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            orientationButtons.forEach(btn => {
+                if (btn.dataset.orientation === 'auto') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            brightnessButtons.forEach(btn => {
+                if (btn.dataset.brightness === '0') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            sharpenButtons.forEach(btn => {
+                if (btn.dataset.sharpen === '0') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            saturationButtons.forEach(btn => {
+                if (btn.dataset.saturation === '100') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            rotationButtons.forEach(btn => {
+                if (btn.dataset.rotate === '0') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            invertColorsCheckbox.checked = false;
+            
+            filters.cropEnabled = false;
+            filters.brightness = 0;
+            filters.sharpen = 0;
+            filters.saturation = 100;
+            filters.rotation = 0;
+            filters.invertColors = false;
+            filters.pdfOrientation = 'auto';
+            
+            disableCropMode();
+            updateRotationIndicator();
+            updatePreview();
+            updateFileList();
+        }
+        
+        async function convertToPDF(action) {
+            if (images.length === 0) return;
+            
+            processingTitle.textContent = 'Creating PDF Document';
+            processingText.textContent = 'Please wait while we process your images';
+            progressText.textContent = `Processing image 1 of ${images.length}`;
+            processingOverlay.style.display = 'flex';
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                let pdf = null;
+                
+                for (let i = 0; i < images.length; i++) {
+                    progressText.textContent = `Processing image ${i + 1} of ${images.length}`;
+                    
+                    const img = new Image();
+                    
+                    await new Promise((resolve) => {
+                        img.onload = () => {
+                            // Determine orientation for this page
+                            let orientation = 'portrait';
+                            
+                            if (filters.pdfOrientation === 'landscape') {
+                                orientation = 'landscape';
+                            } else if (filters.pdfOrientation === 'auto') {
+                                // Auto-detect based on image aspect ratio
+                                const aspectRatio = img.width / img.height;
+                                orientation = aspectRatio > 1 ? 'landscape' : 'portrait';
+                            }
+                            
+                            // Create PDF or add page
+                            if (i === 0) {
+                                // First page - create PDF
+                                pdf = new jsPDF({
+                                    orientation: orientation,
+                                    unit: 'mm',
+                                    format: 'a4'
+                                });
+                            } else {
+                                // Add new page with determined orientation
+                                pdf.addPage(orientation === 'landscape' ? 'l' : 'p');
+                            }
+                            
+                            const pageWidth = pdf.internal.pageSize.getWidth();
+                            const pageHeight = pdf.internal.pageSize.getHeight();
+                            const margin = 10;
+                            const contentWidth = pageWidth - 2 * margin;
+                            const contentHeight = pageHeight - 2 * margin;
+                            
+                            // Get image dimensions
+                            let imgWidth = img.width;
+                            let imgHeight = img.height;
+                            
+                            // Calculate scaling to fit within page
+                            const scale = Math.min(
+                                contentWidth / imgWidth,
+                                contentHeight / imgHeight
+                            );
+                            
+                            const scaledWidth = imgWidth * scale;
+                            const scaledHeight = imgHeight * scale;
+                            
+                            const x = margin + (contentWidth - scaledWidth) / 2;
+                            const y = margin + (contentHeight - scaledHeight) / 2;
+                            
+                            // Add image to PDF
+                            pdf.addImage(
+                                images[i].filteredData,
+                                'JPEG',
+                                x,
+                                y,
+                                scaledWidth,
+                                scaledHeight
+                            );
+                            
+                            // Add page number
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(128, 128, 128);
+                            pdf.text(
+                                `Page ${i + 1} of ${images.length}`,
+                                pageWidth / 2,
+                                pageHeight - 5,
+                                { align: 'center' }
+                            );
+                            
+                            resolve();
+                        };
+                        
+                        img.src = images[i].filteredData;
+                    });
+                }
+                
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:]/g, '-');
+                const filename = `images_${timestamp}.pdf`;
+                
+                if (action === 'download') {
+                    processingText.textContent = 'Saving PDF file...';
+                    progressText.textContent = 'Finalizing document...';
+                    
+                    pdf.save(filename);
+                    
+                    setTimeout(() => {
+                        processingOverlay.style.display = 'none';
+                        alert(`PDF successfully created with ${images.length} pages!`);
+                    }, 300);
+                    
+                } else if (action === 'print') {
+                    processingText.textContent = 'Opening print dialog...';
+                    progressText.textContent = 'Please wait...';
+                    
+                    const pdfBlob = pdf.output('blob');
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    
+                    const printWindow = window.open(pdfUrl, '_blank');
+                    
+                    if (printWindow) {
+                        printWindow.onload = function() {
+                            setTimeout(() => {
+                                printWindow.print();
+                                setTimeout(() => {
+                                    URL.revokeObjectURL(pdfUrl);
+                                    processingOverlay.style.display = 'none';
+                                }, 1000);
+                            }, 500);
+                        };
+                    } else {
+                        alert('Popup blocked. Downloading PDF instead.');
+                        pdf.save(filename);
+                        processingOverlay.style.display = 'none';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error creating PDF:', error);
+                processingOverlay.style.display = 'none';
+                alert(`Error creating PDF: ${error.message}. Please try again.`);
+            }
+        }
+    </script>
 </body>
 </html>
