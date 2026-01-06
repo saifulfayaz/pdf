@@ -1219,7 +1219,7 @@
             processAllBtn.disabled = true;
         }
         
-        // Crop Functions - FIXED
+        // Crop Functions
         function toggleCropMode() {
             if (images.length === 0) return;
             
@@ -1229,7 +1229,6 @@
             
             if (cropMode) {
                 imagePreview.style.cursor = 'crosshair';
-                alert('Click and drag to select crop area. Use Apply button to crop.');
             } else {
                 imagePreview.style.cursor = 'default';
                 removeCropSelection();
@@ -1243,17 +1242,19 @@
             const rect = imagePreview.getBoundingClientRect();
             const containerRect = previewContainer.getBoundingClientRect();
             
-            // Calculate relative position within the image
-            const scaleX = imagePreview.naturalWidth / rect.width;
-            const scaleY = imagePreview.naturalHeight / rect.height;
+            // Calculate image position within container (centered)
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
             
-            // Get click position relative to image
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
+            // Get click position relative to container, then adjust for image position
+            cropStartX = (e.clientX - containerRect.left) - imgX;
+            cropStartY = (e.clientY - containerRect.top) - imgY;
+            cropCurrentX = cropStartX;
+            cropCurrentY = cropStartY;
             
-            // Convert back to display coordinates
-            cropStartX = (e.clientX - containerRect.left);
-            cropStartY = (e.clientY - containerRect.top);
+            // Ensure coordinates are within image bounds
+            cropStartX = Math.max(0, Math.min(cropStartX, rect.width));
+            cropStartY = Math.max(0, Math.min(cropStartY, rect.height));
             cropCurrentX = cropStartX;
             cropCurrentY = cropStartY;
             
@@ -1274,14 +1275,18 @@
             const containerRect = previewContainer.getBoundingClientRect();
             const touch = e.touches[0];
             
-            const scaleX = imagePreview.naturalWidth / rect.width;
-            const scaleY = imagePreview.naturalHeight / rect.height;
+            // Calculate image position within container (centered)
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
             
-            const x = (touch.clientX - rect.left) * scaleX;
-            const y = (touch.clientY - rect.top) * scaleY;
+            cropStartX = (touch.clientX - containerRect.left) - imgX;
+            cropStartY = (touch.clientY - containerRect.top) - imgY;
+            cropCurrentX = cropStartX;
+            cropCurrentY = cropStartY;
             
-            cropStartX = (touch.clientX - containerRect.left);
-            cropStartY = (touch.clientY - containerRect.top);
+            // Ensure coordinates are within image bounds
+            cropStartX = Math.max(0, Math.min(cropStartX, rect.width));
+            cropStartY = Math.max(0, Math.min(cropStartY, rect.height));
             cropCurrentX = cropStartX;
             cropCurrentY = cropStartY;
             
@@ -1297,9 +1302,20 @@
         function updateCropDrag(e) {
             if (!isCropping) return;
             
+            const rect = imagePreview.getBoundingClientRect();
             const containerRect = previewContainer.getBoundingClientRect();
-            cropCurrentX = e.clientX - containerRect.left;
-            cropCurrentY = e.clientY - containerRect.top;
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
+            
+            let x = e.clientX - containerRect.left - imgX;
+            let y = e.clientY - containerRect.top - imgY;
+            
+            // Constrain to image bounds
+            x = Math.max(0, Math.min(x, rect.width));
+            y = Math.max(0, Math.min(y, rect.height));
+            
+            cropCurrentX = x;
+            cropCurrentY = y;
             updateCropSelection();
         }
         
@@ -1307,10 +1323,21 @@
             if (!isCropping) return;
             
             e.preventDefault();
+            const rect = imagePreview.getBoundingClientRect();
             const containerRect = previewContainer.getBoundingClientRect();
             const touch = e.touches[0];
-            cropCurrentX = touch.clientX - containerRect.left;
-            cropCurrentY = touch.clientY - containerRect.top;
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
+            
+            let x = touch.clientX - containerRect.left - imgX;
+            let y = touch.clientY - containerRect.top - imgY;
+            
+            // Constrain to image bounds
+            x = Math.max(0, Math.min(x, rect.width));
+            y = Math.max(0, Math.min(y, rect.height));
+            
+            cropCurrentX = x;
+            cropCurrentY = y;
             updateCropSelection();
         }
         
@@ -1340,6 +1367,11 @@
         function updateCropSelection() {
             if (!cropSelection) return;
             
+            const rect = imagePreview.getBoundingClientRect();
+            const containerRect = previewContainer.getBoundingClientRect();
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
+            
             const x = Math.min(cropStartX, cropCurrentX);
             const y = Math.min(cropStartY, cropCurrentY);
             const width = Math.abs(cropCurrentX - cropStartX);
@@ -1349,16 +1381,19 @@
             const finalWidth = Math.max(width, minSize);
             const finalHeight = Math.max(height, minSize);
             
-            // Constrain to container bounds
-            const containerRect = previewContainer.getBoundingClientRect();
-            const maxX = containerRect.width - finalWidth;
-            const maxY = containerRect.height - finalHeight;
+            // Constrain to image bounds
+            const maxX = rect.width - finalWidth;
+            const maxY = rect.height - finalHeight;
             
             const finalX = Math.max(0, Math.min(x, maxX));
             const finalY = Math.max(0, Math.min(y, maxY));
             
-            cropSelection.style.left = `${finalX}px`;
-            cropSelection.style.top = `${finalY}px`;
+            // Convert to container coordinates for display
+            const displayX = imgX + finalX;
+            const displayY = imgY + finalY;
+            
+            cropSelection.style.left = `${displayX}px`;
+            cropSelection.style.top = `${displayY}px`;
             cropSelection.style.width = `${finalWidth}px`;
             cropSelection.style.height = `${finalHeight}px`;
         }
@@ -1377,62 +1412,91 @@
             }
             
             const currentImage = images[currentImageIndex];
-            const rect = cropSelection.getBoundingClientRect();
-            const imgRect = imagePreview.getBoundingClientRect();
+            const rect = imagePreview.getBoundingClientRect();
             const containerRect = previewContainer.getBoundingClientRect();
             
-            // Calculate the position of the image within the container
-            const imgLeft = (containerRect.width - imgRect.width) / 2;
-            const imgTop = (containerRect.height - imgRect.height) / 2;
+            // Calculate image position within container (centered)
+            const imgX = (containerRect.width - rect.width) / 2;
+            const imgY = (containerRect.height - rect.height) / 2;
             
-            // Calculate crop area relative to the image
-            const cropX = Math.max(0, rect.left - imgLeft);
-            const cropY = Math.max(0, rect.top - imgTop);
-            const cropWidth = Math.min(rect.width, imgRect.width - cropX);
-            const cropHeight = Math.min(rect.height, imgRect.height - cropY);
+            // Get crop selection position
+            const cropRect = cropSelection.getBoundingClientRect();
+            
+            // Calculate crop area relative to the image (not the container)
+            const cropX = Math.max(0, cropRect.left - containerRect.left - imgX);
+            const cropY = Math.max(0, cropRect.top - containerRect.top - imgY);
+            
+            // Ensure crop area is within image bounds
+            const cropWidth = Math.min(cropRect.width, rect.width - cropX);
+            const cropHeight = Math.min(cropRect.height, rect.height - cropY);
             
             // Scale to original image dimensions
-            const scaleX = currentImage.originalWidth / imgRect.width;
-            const scaleY = currentImage.originalHeight / imgRect.height;
+            const scaleX = currentImage.originalWidth / rect.width;
+            const scaleY = currentImage.originalHeight / rect.height;
+            
+            // Ensure we have valid dimensions
+            if (cropWidth <= 0 || cropHeight <= 0) {
+                alert('Invalid crop area. Please try again.');
+                return;
+            }
             
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = cropWidth * scaleX;
-            canvas.height = cropHeight * scaleY;
+            // Calculate dimensions for cropped area in original scale
+            const originalCropWidth = cropWidth * scaleX;
+            const originalCropHeight = cropHeight * scaleY;
+            const originalCropX = cropX * scaleX;
+            const originalCropY = cropY * scaleY;
+            
+            // Set canvas to cropped dimensions
+            canvas.width = originalCropWidth;
+            canvas.height = originalCropHeight;
             
             const img = new Image();
             img.onload = function() {
-                // Draw the cropped portion
-                ctx.drawImage(
-                    img,
-                    cropX * scaleX, cropY * scaleY,
-                    canvas.width, canvas.height,
-                    0, 0,
-                    canvas.width, canvas.height
-                );
-                
-                currentImage.filteredData = canvas.toDataURL('image/jpeg', 0.9);
-                currentImage.cropArea = {
-                    x: cropX * scaleX,
-                    y: cropY * scaleY,
-                    width: canvas.width,
-                    height: canvas.height
-                };
-                
-                currentImage.filtersApplied = true;
-                
-                // Update preview
-                imagePreview.src = currentImage.filteredData;
-                removeCropSelection();
-                cropControls.classList.remove('show');
-                cropMode = false;
-                cropBtn.classList.remove('active');
-                updateFileList();
-                
-                alert('Crop applied successfully!');
+                try {
+                    // Draw only the cropped portion of the image
+                    ctx.drawImage(
+                        img,
+                        originalCropX, originalCropY, // Source x, y (where to crop from)
+                        originalCropWidth, originalCropHeight, // Source width, height (what to crop)
+                        0, 0, // Destination x, y (where to draw on canvas)
+                        originalCropWidth, originalCropHeight // Destination width, height
+                    );
+                    
+                    currentImage.filteredData = canvas.toDataURL('image/jpeg', 0.9);
+                    currentImage.cropArea = {
+                        x: originalCropX,
+                        y: originalCropY,
+                        width: originalCropWidth,
+                        height: originalCropHeight
+                    };
+                    
+                    currentImage.filtersApplied = true;
+                    
+                    // Update preview
+                    imagePreview.src = currentImage.filteredData;
+                    removeCropSelection();
+                    cropControls.classList.remove('show');
+                    cropMode = false;
+                    cropBtn.classList.remove('active');
+                    imagePreview.style.cursor = 'default';
+                    updateFileList();
+                    
+                } catch (error) {
+                    console.error('Error applying crop:', error);
+                    alert('Error applying crop. Please try again.');
+                }
             };
-            img.src = currentImage.originalData;
+            
+            img.onerror = function() {
+                console.error('Error loading image for cropping');
+                alert('Error loading image. Please try again.');
+            };
+            
+            // Load from filtered data if it exists, otherwise from original
+            img.src = currentImage.filteredData || currentImage.originalData;
         }
         
         function cancelCrop() {
@@ -1458,7 +1522,7 @@
             alert('Image reset to original');
         }
         
-        // Image Processing Functions - FIXED TO RESET TO ORIGINAL PROPERLY
+        // Image Processing Functions
         function rotateImage(degrees) {
             if (images.length === 0) return;
             
@@ -1538,7 +1602,7 @@
             const imageData = ctx.getImageData(0, 0, width, height);
             const data = imageData.data;
             
-            // Apply brightness - FIXED: 0% should be original
+            // Apply brightness - 0% should be original
             if (filters.brightness !== 0) {
                 const brightnessFactor = 1.0 + (filters.brightness / 100);
                 for (let i = 0; i < data.length; i += 4) {
@@ -1548,7 +1612,7 @@
                 }
             }
             
-            // Apply saturation - FIXED: 100% should be original
+            // Apply saturation - 100% should be original
             if (filters.saturation !== 100) {
                 const saturationFactor = filters.saturation / 100;
                 for (let i = 0; i < data.length; i += 4) {
@@ -1575,7 +1639,7 @@
             
             ctx.putImageData(imageData, 0, 0);
             
-            // Apply sharpen (separate pass) - FIXED: 0% should be original
+            // Apply sharpen (separate pass) - 0% should be original
             if (filters.sharpen > 0) {
                 applySharpenFilter(ctx, width, height);
             }
