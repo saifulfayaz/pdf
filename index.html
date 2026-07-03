@@ -73,19 +73,22 @@
       display: flex;
       align-items: center;
       gap: 0;
-      margin-right: 12px;
+      margin-right: 14px;
+      flex: 0 0 auto;
     }
 
     .logo {
-      width: 34px;
+      width: 150px;
       height: 34px;
       border-radius: 10px;
       display: block;
-      object-fit: cover;
-      flex: 0 0 auto;
-      background: var(--surface-2);
+      object-fit: contain;
+      object-position: center;
+      flex: 0 0 150px;
+      background: #fff;
       border: 1px solid rgba(0,0,0,.06);
       box-shadow: 0 2px 8px rgba(0,0,0,.10);
+      padding: 3px 7px;
     }
 
     .tagline { display: none; }
@@ -956,9 +959,11 @@
         margin-right: 4px;
       }
       .logo {
-        width: 32px;
+        width: 116px;
         height: 32px;
-        flex: 0 0 32px;
+        flex: 0 0 116px;
+        padding: 3px 6px;
+        object-fit: contain;
       }
       .top-actions {
         flex: 0 1 auto;
@@ -1142,6 +1147,12 @@
       .rotate-btn {
         font-size: 12px;
       }
+      .logo {
+        width: 102px;
+        height: 30px;
+        flex-basis: 102px;
+        padding: 3px 5px;
+      }
     }
   </style>
 </head>
@@ -1149,7 +1160,7 @@
   <main class="app">
     <header class="top">
       <div class="brand">
-        <img class="logo" src="favicon.png" alt="PDF Studio logo" decoding="async" />
+        <img class="logo" src="logo.png" alt="PDF Studio logo" decoding="async" />
       </div>
       <div class="top-actions">
         <a class="tool-link" href="https://pdf.saiful.in/compress" title="Open PDF Compressor">
