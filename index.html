@@ -72,8 +72,8 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-right: 20px;
+      gap: 0;
+      margin-right: 12px;
     }
 
     .logo {
@@ -86,14 +86,6 @@
       background: var(--surface-2);
       border: 1px solid rgba(0,0,0,.06);
       box-shadow: 0 2px 8px rgba(0,0,0,.10);
-    }
-
-    h1 {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -.02em;
-      color: var(--text);
-      white-space: nowrap;
     }
 
     .tagline { display: none; }
@@ -267,6 +259,69 @@
       box-shadow: 0 1px 5px rgba(0,0,0,.10), 0 0 0 1px rgba(232,80,10,.12);
     }
     .seg-btn.active small { color: var(--text-2); }
+
+    /* ── CUSTOM 2/A4 SETTINGS ── */
+    .card-settings {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .card-settings.show { display: block; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+
+    .card-field {
+      min-width: 0;
+    }
+
+    .card-field label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-3);
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Geist Mono', monospace;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .card-field input {
+      width: 100%;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 650;
+      font-family: 'Geist Mono', monospace;
+      outline: none;
+      transition: border-color .12s, box-shadow .12s;
+    }
+
+    .card-field input:focus {
+      border-color: rgba(232,80,10,.45);
+      box-shadow: 0 0 0 3px rgba(232,80,10,.10);
+    }
+
+    .card-orientation {
+      --cols: 2;
+    }
+
+    .card-summary {
+      margin-top: 8px;
+      font-size: 10.5px;
+      color: var(--text-3);
+      font-family: 'Geist Mono', monospace;
+      line-height: 1.45;
+    }
 
     /* crop mode = 2-col seg */
     .crop-mode-options { --cols: 2; }
@@ -855,13 +910,8 @@
     @keyframes successFlash { 0%,100% { background: var(--success); } 50% { background: #22c55e; } }
     @keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-    /* ── HIDDEN / LEGACY ── */
-    .size-option[data-size="letter"] { display: none !important; }
-    #addMoreBtn, #clearBtn { display: none !important; }
-
-    /* Shim: map old class names to new styles */
-    .size-box, .effect-box, .crop-mode-box, .sharp-home, .shadow-home { display: block; }
-    .size-label { display: none; } /* replaced by ctrl-label */
+    /* ── COMPATIBILITY ── */
+    .size-box, .crop-mode-box, .sharp-home, .shadow-home { display: block; }
 
     .primary { background: var(--accent) !important; color: #fff !important; border: 0 !important; }
     .ghost { background: transparent !important; color: var(--text-2) !important; border: 1px solid var(--border) !important; }
@@ -902,12 +952,8 @@
       }
       .brand {
         min-width: 0;
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         margin-right: 4px;
-      }
-      .brand h1 {
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
       .logo {
         width: 32px;
@@ -980,12 +1026,6 @@
         white-space: nowrap;
         text-align: right;
       }
-      .rotate-actions,
-      .page-tool-actions,
-      .rotation-row {
-        width: 100%;
-        min-width: 0;
-      }
       .rotate-btn {
         min-width: 0;
       }
@@ -1030,8 +1070,6 @@
         min-height: 162px;
       }
 
-      .size-option[data-size="letter"] { display: none !important; }
-      #addMoreBtn, #clearBtn { display: none !important; }
 
       .crop-modal {
         inset: 0;
@@ -1112,7 +1150,6 @@
     <header class="top">
       <div class="brand">
         <img class="logo" src="favicon.png" alt="PDF Studio logo" decoding="async" />
-        <h1>PDF Studio</h1>
       </div>
       <div class="top-actions">
         <a class="tool-link" href="https://pdf.saiful.in/compress" title="Open PDF Compressor">
@@ -1145,8 +1182,28 @@
             <div class="size-options seg">
               <button class="size-option seg-btn active" type="button" data-size="original">Original</button>
               <button class="size-option seg-btn" type="button" data-size="a4">A4</button>
-              <button class="size-option seg-btn" type="button" data-size="letter">Letter</button>
-              <button class="size-option seg-btn" type="button" data-size="a4-cards" title="Two fixed images per A4 page">2/A4</button>
+              <button class="size-option seg-btn" type="button" data-size="a4-cards" title="Two custom-size images per A4 page">2/A4</button>
+            </div>
+            <div class="card-settings" id="cardSettings" aria-label="2 per A4 size settings">
+              <div class="card-grid">
+                <div class="card-field">
+                  <label for="cardWidthInput">Width mm</label>
+                  <input id="cardWidthInput" type="number" min="10" max="297" step="1" value="85" inputmode="decimal" />
+                </div>
+                <div class="card-field">
+                  <label for="cardHeightInput">Height mm</label>
+                  <input id="cardHeightInput" type="number" min="10" max="297" step="1" value="55" inputmode="decimal" />
+                </div>
+                <div class="card-field">
+                  <label for="cardGapInput">Gap mm</label>
+                  <input id="cardGapInput" type="number" min="0" max="120" step="1" value="50" inputmode="decimal" />
+                </div>
+              </div>
+              <div class="card-orientation seg" id="cardOrientationOptions">
+                <button class="card-orientation-option seg-btn active" type="button" data-card-orientation="portrait">Portrait</button>
+                <button class="card-orientation-option seg-btn" type="button" data-card-orientation="landscape">Landscape</button>
+              </div>
+              <div class="card-summary" id="cardSummary">2 images per A4 • 85 × 55 mm • gap 50 mm</div>
             </div>
           </div>
 
@@ -1187,8 +1244,6 @@
           <!-- Footer actions -->
           <div class="ctrl-footer">
             <div class="actions">
-              <button id="addMoreBtn" class="ghost btn-ghost" type="button">Add more</button>
-              <button id="clearBtn" class="ghost btn-ghost" type="button">Clear all</button>
               <button id="makePdfBtn" class="primary btn-primary wide" type="button">Create PDF</button>
             </div>
             <div class="result-actions result-row">
@@ -1273,8 +1328,6 @@
   <script>
     const fileInput = document.getElementById('fileInput');
     const dropZone = document.getElementById('dropZone');
-    const addMoreBtn = document.getElementById('addMoreBtn');
-    const clearBtn = document.getElementById('clearBtn');
     const makePdfBtn = document.getElementById('makePdfBtn');
     const saveLink = document.getElementById('saveLink');
     const printBtn = document.getElementById('printBtn');
@@ -1288,7 +1341,12 @@
     const progressBar = document.getElementById('progressBar');
     const miniStatus = document.getElementById('miniStatus');
     const sizeButtons = [...document.querySelectorAll('.size-option')];
-    const greyscaleToggle = document.getElementById('greyscaleToggle'); // sidebar greyscale removed
+    const cardSettings = document.getElementById('cardSettings');
+    const cardWidthInput = document.getElementById('cardWidthInput');
+    const cardHeightInput = document.getElementById('cardHeightInput');
+    const cardGapInput = document.getElementById('cardGapInput');
+    const cardSummary = document.getElementById('cardSummary');
+    const cardOrientationButtons = [...document.querySelectorAll('[data-card-orientation]')];
     const cropModeButtons = [...document.querySelectorAll('[data-crop-mode]')];
 
     const cropModal = document.getElementById('cropModal');
@@ -1310,7 +1368,6 @@
     const homeSharpnessOptions = document.getElementById('homeSharpnessOptions');
     const homeSharpnessButtons = [...homeSharpnessOptions.querySelectorAll('[data-sharp]')];
     const homeSharpnessLabel = document.getElementById('homeSharpnessLabel');
-    const shadowToggle = document.getElementById('shadowToggle'); // sidebar shadow toggle removed
     const shadowHomeLabel = document.getElementById('shadowHomeLabel');
     const rotateLeftBtn = document.getElementById('rotateLeftBtn');
     const rotateRightBtn = document.getElementById('rotateRightBtn');
@@ -1340,13 +1397,13 @@
       denoise: true
     };
     const A4 = { portrait: [595.28, 841.89], landscape: [841.89, 595.28] };
-    const LETTER = { portrait: [612, 792], landscape: [792, 612] };
 
     let images = [];
     let shadowWorker = null;
     let shadowToken = 0;
     let shadowJobs = new Map();
     let pageMode = 'original';
+    let cardOrientation = 'portrait';
     let cropMode = 'perspective';
     let greyscaleAll = false;
     let isWorking = false;
@@ -1361,8 +1418,6 @@
       addFiles([...fileInput.files]);
       fileInput.value = '';
     });
-    addMoreBtn.addEventListener('click', () => fileInput.click());
-    clearBtn.addEventListener('click', clearImages);
     makePdfBtn.addEventListener('click', createPdf);
     printBtn.addEventListener('click', printPdf);
     cropResetBtn.addEventListener('click', resetCropPoints);
@@ -1385,6 +1440,28 @@
         if (isWorking) return;
         pageMode = button.dataset.size;
         sizeButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+        updateCardSettingsPanel();
+        clearPdfUrl();
+      });
+    });
+
+    [cardWidthInput, cardHeightInput, cardGapInput].forEach(input => {
+      input.addEventListener('input', () => {
+        updateCardSettingsPanel();
+        clearPdfUrl();
+      });
+      input.addEventListener('blur', () => {
+        normalizeCardInput(input);
+        updateCardSettingsPanel();
+      });
+    });
+
+    cardOrientationButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (isWorking) return;
+        cardOrientation = button.dataset.cardOrientation === 'landscape' ? 'landscape' : 'portrait';
+        cardOrientationButtons.forEach(btn => btn.classList.toggle('active', btn === button));
+        updateCardSettingsPanel();
         clearPdfUrl();
       });
     });
@@ -1587,12 +1664,12 @@
       const usableCount = images.filter(item => !item.error).length;
       emptyText.style.display = images.length ? 'none' : 'grid';
       makePdfBtn.disabled = isWorking || !usableCount || images.some(item => item.loading || item.shadowProcessing);
-      clearBtn.disabled = isWorking || !images.length;
-      addMoreBtn.disabled = isWorking;
       sizeButtons.forEach(button => { button.disabled = isWorking; });
+      [cardWidthInput, cardHeightInput, cardGapInput].forEach(input => { input.disabled = isWorking; });
+      cardOrientationButtons.forEach(button => { button.disabled = isWorking; });
       cropModeButtons.forEach(button => { button.disabled = isWorking || cropModal.classList.contains('show'); });
       edgeDetectBtn.disabled = isWorking || !cropState;
-      if (greyscaleToggle) greyscaleToggle.disabled = isWorking;
+      updateCardSettingsPanel();
       const selected = getSelectedImage();
       const sharpDisabled = isWorking || !selected || selected.loading || selected.error;
       homeSharpnessButtons.forEach(button => { button.disabled = sharpDisabled; });
@@ -4334,8 +4411,9 @@
         setTimeout(() => miniStatus.classList.remove('success-inline'), 2000);
       } catch (error) {
         console.error(error);
-        setStatus('PDF failed');
-        showToast('PDF creation failed');
+        const message = error?.userMessage || error?.message || 'PDF creation failed';
+        setStatus(message);
+        showToast(message);
       } finally {
         hideBusy();
         setWorking(false);
@@ -4368,33 +4446,85 @@
 
     async function createCardPdf(usable) {
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+      const settings = getCardPrintSettings();
+      const pageW = settings.orientation === 'landscape' ? 297 : 210;
+      const pageH = settings.orientation === 'landscape' ? 210 : 297;
+      const groupH = settings.height * 2 + settings.gap;
 
-      // 2/A4 mode: every image is printed at the exact requested physical size.
-      // 8.5 cm × 5.5 cm = 85 mm × 55 mm.
-      const card = { w: 85, h: 55 };
-      const gap = 25;
-      const pageW = 210;
-      const pageH = 297;
-      const x = (pageW - card.w) / 2;
-      const firstY = (pageH - (card.h * 2 + gap)) / 2;
-      const ySlots = [firstY, firstY + card.h + gap];
+      if (settings.width > pageW || groupH > pageH) {
+        const error = new Error(`2/A4 size does not fit ${settings.orientation} A4`);
+        error.userMessage = `2/A4 size too large for ${settings.orientation} A4`;
+        throw error;
+      }
+
+      const pdf = new jsPDF({ orientation: settings.orientation, unit: 'mm', format: 'a4', compress: true });
+      const x = (pageW - settings.width) / 2;
+      const firstY = (pageH - groupH) / 2;
+      const ySlots = [firstY, firstY + settings.height + settings.gap];
 
       for (let i = 0; i < usable.length; i++) {
-        if (i > 0 && i % 2 === 0) pdf.addPage('a4', 'portrait');
+        if (i > 0 && i % 2 === 0) pdf.addPage('a4', settings.orientation);
         const slot = i % 2;
         const item = usable[i];
         const dataUrl = await getPdfImageDataUrl(item, greyscaleAll);
 
-        // Do not auto-fit smaller inside the box. The output area itself must be 85 × 55 mm.
-        pdf.addImage(dataUrl, 'JPEG', x, ySlots[slot], card.w, card.h, undefined, 'FAST');
+        // 2/A4 mode prints each image at the exact physical size selected by the user.
+        pdf.addImage(dataUrl, 'JPEG', x, ySlots[slot], settings.width, settings.height, undefined, 'FAST');
 
         const progress = ((i + 1) / usable.length) * 100;
         updateBusy('Creating PDF', `${i + 1} of ${usable.length}`, progress);
         updateProgress(progress);
         await frame();
       }
-      return { blob: pdf.output('blob'), filename: makePdfFilename(usable.length, 'a4-85x55mm') };
+      const filenameTag = `a4-${formatNumberForName(settings.width)}x${formatNumberForName(settings.height)}mm-gap${formatNumberForName(settings.gap)}-${settings.orientation}`;
+      return { blob: pdf.output('blob'), filename: makePdfFilename(usable.length, filenameTag) };
+    }
+
+    function getCardPrintSettings() {
+      const width = readNumberInput(cardWidthInput, 85, 10, 297);
+      const height = readNumberInput(cardHeightInput, 55, 10, 297);
+      const gap = readNumberInput(cardGapInput, 50, 0, 120);
+      const orientation = cardOrientation === 'landscape' ? 'landscape' : 'portrait';
+      return { width, height, gap, orientation };
+    }
+
+    function readNumberInput(input, fallback, min, max) {
+      const value = Number(input?.value);
+      if (!Number.isFinite(value)) return fallback;
+      return clamp(value, min, max);
+    }
+
+    function normalizeCardInput(input) {
+      if (!input) return;
+      const min = Number(input.min || 0);
+      const max = Number(input.max || 999);
+      const fallback = Number(input.defaultValue || input.value || 0);
+      const value = readNumberInput(input, fallback, min, max);
+      input.value = Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, '');
+    }
+
+    function updateCardSettingsPanel() {
+      if (!cardSettings) return;
+      const isCardMode = pageMode === 'a4-cards';
+      cardSettings.classList.toggle('show', isCardMode);
+      cardSettings.setAttribute('aria-hidden', isCardMode ? 'false' : 'true');
+
+      const settings = getCardPrintSettings();
+      const pageW = settings.orientation === 'landscape' ? 297 : 210;
+      const pageH = settings.orientation === 'landscape' ? 210 : 297;
+      const groupH = settings.height * 2 + settings.gap;
+      const fits = settings.width <= pageW && groupH <= pageH;
+      cardSummary.textContent = fits
+        ? `2 images per A4 • ${formatDimension(settings.width)} × ${formatDimension(settings.height)} mm • gap ${formatDimension(settings.gap)} mm`
+        : `Too large for ${settings.orientation} A4 • reduce width, height, or gap`;
+    }
+
+    function formatDimension(value) {
+      return Number(value).toFixed(1).replace(/\.0$/, '');
+    }
+
+    function formatNumberForName(value) {
+      return formatDimension(value).replace('.', 'p');
     }
 
     function makePdfFilename(count, mode) {
@@ -4409,10 +4539,6 @@
       }
       if (pageMode === 'a4-cards') {
         return { width: A4.portrait[0], height: A4.portrait[1] };
-      }
-      if (pageMode === 'letter') {
-        const dims = item.width >= item.height ? LETTER.landscape : LETTER.portrait;
-        return { width: dims[0], height: dims[1] };
       }
       return { width: Math.max(1, item.width), height: Math.max(1, item.height) };
     }
