@@ -40,7 +40,7 @@
       height: 100vh;
       overflow: hidden;
       display: grid;
-      grid-template-rows: 52px minmax(0, 1fr);
+      grid-template-rows: 70px minmax(0, 1fr);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 13px;
       background: var(--bg);
@@ -73,22 +73,23 @@
       display: flex;
       align-items: center;
       gap: 0;
-      margin-right: 14px;
+      margin-right: 18px;
       flex: 0 0 auto;
+      min-width: 0;
     }
 
     .logo {
-      width: 200px;
-      height: 40px;
-      border-radius: 10px;
+      width: 230px;
+      height: 58px;
       display: block;
       object-fit: contain;
       object-position: center;
-      flex: 0 0 150px;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.06);
-      box-shadow: 0 2px 8px rgba(0,0,0,.10);
-      padding: 3px 7px;
+      flex: 0 0 230px;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
     }
 
     .tagline { display: none; }
@@ -948,8 +949,8 @@
       }
 
       .top {
-        min-height: 56px;
-        padding: 8px 10px;
+        min-height: 66px;
+        padding: 7px 10px;
         gap: 8px;
         overflow: hidden;
       }
@@ -959,10 +960,10 @@
         margin-right: 4px;
       }
       .logo {
-        width: 116px;
-        height: 32px;
-        flex: 0 0 116px;
-        padding: 3px 6px;
+        width: 174px;
+        height: 48px;
+        flex: 0 0 174px;
+        padding: 0;
         object-fit: contain;
       }
       .top-actions {
@@ -1148,10 +1149,10 @@
         font-size: 12px;
       }
       .logo {
-        width: 102px;
-        height: 30px;
-        flex-basis: 102px;
-        padding: 3px 5px;
+        width: 152px;
+        height: 42px;
+        flex-basis: 152px;
+        padding: 0;
       }
     }
   </style>
